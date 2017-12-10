@@ -56,7 +56,24 @@ _END;
 		
 	}
 
+	function login(){
+		$html = <<< _END
+		<form action="antivirus.php">
+			<div class = "container">
+				<lable>Username</label>
+				<input type="text" placeholder="Enter Username" name="un required>
+				<lable>Password</label>
+				<input type="password" placeholder="Enter Password" name="pw" required>
+				<button type="submit">Sign in</button>
+			</div>
+			
+
+_END
+	}
+
+	//TODO: Sanitize
 	function addVirus($conn, $virus){
+		$virus = mysql_fix_string($conn, $virus);
 		echo $virus."<br>";
 		global $virus_table;
 		$query = "INSERT INTO $virus_table VALUES('$virus')";
@@ -80,5 +97,11 @@ _END;
 		}
 		$result->close();
 		return $signatures;
+	}
+
+	function mysql_fix_string($conn, $str){
+		if(get_magic_quotes_gpc())
+			$str = stripslashes($str);
+		return $conn->real_escape_string($str);
 	}
 ?>
