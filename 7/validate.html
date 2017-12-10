@@ -1,0 +1,23 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Username and password</title>
+    <script src="validate_functions.js"></script>
+</head>
+    <body>
+    <table border="0" cellpadding="2" cellspacing="5" bgcolor="#eeeeee">
+        <th colspan="2" align="center">Username/Password</th>
+        <form action="assignment7.php" method='post' onsubmit="return validate(this)">
+            <tr><td>Username</td>
+                <td><input type="text" maxlength="32" name="username"></td></tr>
+            <tr><td>Email</td>
+                <td><input type="text" maxlength="64" name="email"></td></tr>
+            <tr><td>Password</td>
+                <td><input type="text" maxlength="16" name="password"></td></tr>
+            <tr><td colspan="2" algin="center">
+                <input type='submit' value='Submit'></td></tr>
+        </form>
+    </table>
+</body>
+</html>
