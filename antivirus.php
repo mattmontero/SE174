@@ -8,8 +8,10 @@
 	echo <<< _END
 		<form action="antivirus.php" method='post' 
 		action='assignment4.php' enctype='multipart/form-data'>
-			<input type="radio" name="infected" value="possible" onClick="r=true;enableSubmit();"> Possibly Infected<br>
-			<input type="radio" name="infected" value="virus" onClick="r=true;enableSubmit();"> Surely Infected<br><br>
+			<input type="radio" name="infected" value="possible" 
+				onClick="r=true;enableSubmit();"> Possibly Infected<br>
+			<input type="radio" name="infected" value="virus" 
+				onClick="r=true;enableSubmit();"> Surely Infected<br><br>
 			Select File: <input type='file' name='filename' onchange="f=true;enableSubmit();" size='10'>
 			<input type='submit' id="sb" disabled="disabled" value='Upload'>
 		</form>
@@ -26,14 +28,12 @@ _END;
 	
 	if($_FILES){
 		$handler = fopen($_FILES['filename']['tmp_name'], "r");		
-		$contents = fread($handler, filesize($_FILES['filename']['tmp_name']));
-		//$signature = md5_file($_FILES['filename']['tmp_name']);	
+		$contents = fread($handler, filesize($_FILES['filename']['tmp_name']));	
 		$contents = str_replace(array("\r", "\n"), '', $contents);
-		
+
 		addVirus($conn,"01234567890123456789");
 		$virus_signatures = getVirusSignatures($conn);
 		print_r($virus_signatures);
-		//print("*".$contents."*<br>");
 		print("<div style ='font:20px Monospace;text-decoration:underline;'>".file_get_contents($_FILES['filename']['tmp_name'], NULL, NULL, 0, 20)."<br>");
 		
 		$status = $_POST['infected'];
@@ -42,6 +42,7 @@ _END;
 				echo "Possibly infected<br>";
 				break;
 			case 'virus':
+				login();
 				echo "Surely a virus<br>";
 				$adminHTML = "";
 				break;
@@ -56,24 +57,9 @@ _END;
 		
 	}
 
-	function login(){
-		$html = <<< _END
-		<form action="antivirus.php">
-			<div class = "container">
-				<lable>Username</label>
-				<input type="text" placeholder="Enter Username" name="un required>
-				<lable>Password</label>
-				<input type="password" placeholder="Enter Password" name="pw" required>
-				<button type="submit">Sign in</button>
-			</div>
-			
-
-_END
-	}
-
 	//TODO: Sanitize
 	function addVirus($conn, $virus){
-		$virus = mysql_fix_string($conn, $virus);
+		$virus = mysql_entities_fix_string($conn, $virus);
 		echo $virus."<br>";
 		global $virus_table;
 		$query = "INSERT INTO $virus_table VALUES('$virus')";
@@ -97,6 +83,23 @@ _END
 		}
 		$result->close();
 		return $signatures;
+	}
+
+	function login(){
+		$html = <<< _END
+		<form action="antivirus.php">
+			<div class = "container">
+				<lable>Username</label>
+				<input type="text" placeholder="Enter Username" name="un required>
+				<lable>Password</label>
+				<input type="password" placeholder="Enter Password" name="pw" required>
+				<button type="submit">Sign in</button>
+			</div>
+_END;
+	}
+
+	function mysql_entities_fix_string($conn, $str){
+		return htmlentities(mysql_fix_string($conn, $str));
 	}
 
 	function mysql_fix_string($conn, $str){
