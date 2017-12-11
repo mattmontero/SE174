@@ -1,0 +1,8 @@
+.login-content{
+    display: none; /* Hidden by default */
+    font:20px Monospace;
+}
+.virus-options{
+    background-color: #cc2424;
+    font:20px Monospace;
+}

@@ -8,13 +8,12 @@
 	if($_FILES){
 		$handler = fopen($_FILES['filename']['tmp_name'], "r");		
 		$contents = fread($handler, filesize($_FILES['filename']['tmp_name']));
-		//$signature = md5_file($_FILES['filename']['tmp_name']);	
 		$contents = str_replace(array("\r", "\n"), '', $contents);
 
-		addVirus($conn,"01234567890123456789");
+		//addVirus($conn,"01234567890123456789");
 		$virus_signatures = getVirusSignatures($conn);
-		print_r($virus_signatures);
-		print("<div style ='font:20px Monospace;text-decoration:underline;'>".file_get_contents($_FILES['filename']['tmp_name'], NULL, NULL, 0, 20)."<br>");
+		//print_r($virus_signatures);
+		//print("<div style ='font:20px Monospace;text-decoration:underline;'>".file_get_contents($_FILES['filename']['tmp_name'], NULL, NULL, 0, 20)."<br>");
 		
 		$status = $_POST['infected'];
 		switch($status){
@@ -22,7 +21,6 @@
 				echo "Possibly infected<br>";
 				break;
 			case 'virus':
-				echo "Surely a virus<br>";
 				$adminHTML = "";
 				break;
 			default:
@@ -65,16 +63,7 @@
 	}
 
 	function login(){
-		$html = <<< _END
-		<form action="antivirus.php">
-			<div class = "container">
-				<lable>Username</label>
-				<input type="text" placeholder="Enter Username" name="un required>
-				<lable>Password</label>
-				<input type="password" placeholder="Enter Password" name="pw" required>
-				<button type="submit">Sign in</button>
-			</div>
-_END;
+		
 	}
 
 	function mysql_entities_fix_string($conn, $str){
