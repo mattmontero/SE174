@@ -1,34 +1,14 @@
 <?php
 	require_once 'login.php';
+	require_once 'antivirus.html';
 	$virus_table = "viruses";
 	$conn = new mysqli($hn, $un, $pw, $db);
 	if($conn->connect_error) die($conn->connect_error);
-
-	
-	echo <<< _END
-		<form action="antivirus.php" method='post' 
-		action='assignment4.php' enctype='multipart/form-data'>
-			<input type="radio" name="infected" value="possible" 
-				onClick="r=true;enableSubmit();"> Possibly Infected<br>
-			<input type="radio" name="infected" value="virus" 
-				onClick="r=true;enableSubmit();"> Surely Infected<br><br>
-			Select File: <input type='file' name='filename' onchange="f=true;enableSubmit();" size='10'>
-			<input type='submit' id="sb" disabled="disabled" value='Upload'>
-		</form>
-		<script type="text/javascript">
-		r=false;
-		f=false;
-		function enableSubmit(){
-			if(r && f){
-				(document.getElementById("sb")).disabled="";
-			}
-		}
-		</script>
-_END;
 	
 	if($_FILES){
 		$handler = fopen($_FILES['filename']['tmp_name'], "r");		
-		$contents = fread($handler, filesize($_FILES['filename']['tmp_name']));	
+		$contents = fread($handler, filesize($_FILES['filename']['tmp_name']));
+		//$signature = md5_file($_FILES['filename']['tmp_name']);	
 		$contents = str_replace(array("\r", "\n"), '', $contents);
 
 		addVirus($conn,"01234567890123456789");
@@ -42,7 +22,6 @@ _END;
 				echo "Possibly infected<br>";
 				break;
 			case 'virus':
-				login();
 				echo "Surely a virus<br>";
 				$adminHTML = "";
 				break;

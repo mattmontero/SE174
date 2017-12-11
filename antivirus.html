@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Antivirus</title>
+    <script type="text/javascript">
+		r=false;
+		f=false;
+		function enableSubmit(){
+			if(r && f){
+				(document.getElementById("sb")).disabled="";
+			}
+		}
+		</script>
+</head>
+    <body>
+    <table border="0" cellpadding="2" cellspacing="5" bgcolor="#eeeeee">
+        <th colspan="2" align="center">Antivirus</th>
+        <form action="antivirus.php" method='post' action='assignment4.php' enctype='multipart/form-data'>
+            <tr><td>Possibly Infected:</td>
+                <td><input type="radio" name="infected" value="possible" onClick="r=true;enableSubmit();"></td></tr>
+            <tr><td>Surely Infected:</td>
+			    <td><input type="radio" name="infected" value="virus" onClick="r=true;enableSubmit();"></td></tr>
+            <tr><td>Select File:</td>
+                <td><input type='file' name='filename' onchange="f=true;enableSubmit();" size='10'></td></tr>
+            <tr><td><input type='submit' id="sb" disabled="disabled" value='Upload'></td></tr>
+		</form>
+    </table>
+</body>
+</html>
