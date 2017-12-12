@@ -30,7 +30,7 @@ function validateEmail(email){
 
 function validatePassword(password){
     if(password == "") return "No password was entered.\n"
-    else if(password.length < 4)
+    else if(password.length < 5)
         return "Passwords must be at least 5 characters long!\n"
     else if(!/[a-z]/.test(password) || !/[A-Z]/.test(password) || !/[0-9]/.test(password))
         return "Passwords must contain at least:\n\t1 lowercase letter.\n\t1 uppercase letter.\n\t1 number."
