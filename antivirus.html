@@ -9,22 +9,18 @@
     <div>
         <table border="0" cellpadding="2" cellspacing="5" bgcolor="#eeeeee">
             <th colspan="2" align="center">Antivirus</th>
-            <form action="antivirus.php" method='post' enctype='multipart/form-data'>
-                <div class="login-content" id="loginContent">
+            <form name="InputForm" action="antivirus.php" method='post' enctype='multipart/form-data'>
                     <tr><td>Username</td>
                         <td><input type="text" id="username" maxlength="32" name="username"></td></tr>
                     <tr><td>Password</td>
-                        <td><input type="text" id="password" maxlength="16" name="password"></td></tr>
-                </div>
-                <div class="virus-options">
+                        <td><input type="password" id="password" maxlength="16" name="password"></td></tr>
                     <tr><td>Possibly Infected:</td>
                         <td><input type="radio" name="infected" value="possible" onClick="radioInput();"></td></tr>
                     <tr><td>Surely Infected:</td>
                         <td><input type="radio" name="infected" value="virus" onClick="radioInput()"></td></tr>
                     <tr><td>Select File:</td>
                         <td><input type='file' name='filename' onchange="fileInput(this);" size='10'></td></tr>
-                </div>
-                <tr><td><input type='submit' id="sb" disabled="disabled" value='Upload'></td></tr>
+                <tr><td><input type='submit' id="sb" disabled="disabled" onsubmit="return false" value='Upload'></td></tr>
             </form>
         </table>
     </div>

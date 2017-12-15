@@ -10,33 +10,25 @@
 		$contents = fread($handler, filesize($_FILES['filename']['tmp_name']));
 		$contents = str_replace(array("\r", "\n"), '', $contents);
 
-		//addVirus($conn,"01234567890123456789");
-		$virus_signatures = getVirusSignatures($conn);
-		//print_r($virus_signatures);
-		//print("<div style ='font:20px Monospace;text-decoration:underline;'>".file_get_contents($_FILES['filename']['tmp_name'], NULL, NULL, 0, 20)."<br>");
+		print("<div style ='font:20px Monospace;text-decoration:underline;'>");
 		
 		$status = $_POST['infected'];
 		switch($status){
 			case 'possible':
 				echo "Possibly infected<br>";
+				scanForVirus($conn, $_FILES['filename']['tmp_name']);
 				break;
 			case 'virus':
-				$adminHTML = "";
+				echo "Verify Login...<br>".validate_admin();
 				break;
 			default:
 				echo "Something bad happened.";
 		}
-		
-		for($i = 0; $i < strlen($contents) - 15; $i++){
-			$content20 = file_get_contents($_FILES['filename']['tmp_name'], NULL, NULL, $i, 20);
-			echo "'".$content20."'<br>";
-		}
-		
+
 	}
 
-	//TODO: Sanitize
 	function addVirus($conn, $virus){
-		$virus = mysql_entities_fix_string($conn, $virus);
+		$virus = fix_string($conn, $virus);
 		echo $virus."<br>";
 		global $virus_table;
 		$query = "INSERT INTO $virus_table VALUES('$virus')";
@@ -62,17 +54,41 @@
 		return $signatures;
 	}
 
-	function login(){
+	function fix_string($str){
+        if(get_magic_quotes_gpc())
+            $str = stripcslashes($str);
+        return htmlentities($str);
+	}
+
+	function scanForVirus($conn, $file){
+		$virus_signatures = getVirusSignatures($conn);
+		foreach($virus_signatures as $virus){
+			for($i = 0; $i < filesize($_FILES['filename']['tmp_name']) - 19; $i++){
+				$content20 = file_get_contents($file, NULL, NULL, $i, 20);
+				if($content20 == $virus){
+					echo "Virus --> ";
+					echo "'".$virus."' == ";
+					echo "'".$content20."'<br>";
+				}
+			}
+		}
+	}
+
+	function validate_admin(){
+		echo "in validate admin";
+
+		$username = $password = "";
+		if(isset($_POST['username']))
+			$username = fix_string($_POST["username"]);
+		if(isset($_POST['password']))
+			$password = fix_string($_POST["password"]);
+		echo "<br>Username : '$username'";
+		echo "<br>Password : '$password'<br>";
 		
-	}
-
-	function mysql_entities_fix_string($conn, $str){
-		return htmlentities(mysql_fix_string($conn, $str));
-	}
-
-	function mysql_fix_string($conn, $str){
-		if(get_magic_quotes_gpc())
-			$str = stripslashes($str);
-		return $conn->real_escape_string($str);
+		// if(validate_password($password) && validate_username($username)){
+		// 	return true;
+		// } else {
+		// 	return "Invalid username/password";
+		// }
 	}
 ?>
