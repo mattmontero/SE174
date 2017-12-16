@@ -12,7 +12,7 @@
 		//$contents = fread($handler, filesize($_FILES['filename']['tmp_name']));
 		//$contents = str_replace(array("\r", "\n"), '', $contents);
 
-		print("<div style ='font:20px Monospace; text-decoration:underline;'>");
+		//print("<div style ='font:20px Monospace; text-decoration:underline;'>");
 		
 		$status = $_POST['infected'];
 		switch($status){
