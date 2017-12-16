@@ -9,15 +9,17 @@
     <div>
         <table border="0" cellpadding="2" cellspacing="5" bgcolor="#eeeeee">
             <th colspan="2" align="center">Antivirus</th>
-            <form name="InputForm" onsubmit="return validate(this);" action="antivirus.php" method='post' enctype='multipart/form-data'>
+            <form name="InputForm" id="inputForm" onsubmit="return validate(this);" action="antivirus.php" method='post' enctype='multipart/form-data'>
                     <tr><td>Username</td>
-                        <td><input type="text" id="username" maxlength="32" name="username"></td></tr>
+                        <td><input type="text" id="username" disabled="disabled" maxlength="32" name="username"></td></tr>
                     <tr><td>Password</td>
-                        <td><input type="password" id="password" maxlength="16" name="password"></td></tr>
+                        <td><input type="password" id="password" disabled="disabled" maxlength="16" name="password"></td></tr>
                     <tr><td>Possibly Infected:</td>
                         <td><input type="radio" name="infected" value="possible" onClick="radioInput(this);"></td></tr>
                     <tr><td>Surely Infected:</td>
                         <td><input type="radio" name="infected" value="virus" onClick="radioInput(this);"></td></tr>
+                    <tr><td>Virus Name:</td>
+                        <td><input type="text" name="vname" maxlength="32" disabled="disabled"></td></tr>
                     <tr><td>Select File:</td>
                         <td><input type='file' name='filename' onchange="fileInput(this);" size='10'></td></tr>
                 <tr><td><input type='submit' id="sb" disabled="disabled" value='Upload'></td></tr>

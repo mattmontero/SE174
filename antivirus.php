@@ -6,12 +6,16 @@
 
 	$conn = new mysqli($hn, $un, $pw, $db);
 	if($conn->connect_error) die($conn->connect_error);
+
+	echo "--Add virus test--<br>";
+	echo addVirus($conn,"20202020202020202021");
+	echo "<br>--Add virus test--<br>";
 	
 	if($_FILES){
 		//$handler = fopen($_FILES['filename']['tmp_name'], "r");		
 		//$contents = fread($handler, filesize($_FILES['filename']['tmp_name']));
 		//$contents = str_replace(array("\r", "\n"), '', $contents);
-
+		
 		//print("<div style ='font:20px Monospace; text-decoration:underline;'>");
 		
 		$status = $_POST['infected'];
@@ -26,8 +30,7 @@
 			case 'virus':
 				if(validate_admin($conn)){
 					echo "<br>Logged in!<br>";
-					addVirus($conn, getSignature($_FILES['filename']['tmp_name']));
-					echo "Virus added?<br>";
+					echo addVirus($conn, getSignature($_FILES['filename']['tmp_name']))."<br>";
 				} else {
 					echo "Invalid Username/Password";
 				}
@@ -39,14 +42,11 @@
 
 	function addVirus($conn, $virus){
 		$virus = fix_string($virus);
-		echo "Adding...'".$virus."'<br>";
 		global $virus_table;
-		$query = "INSERT INTO $virus_table VALUES('$virus')";
+		$query = "INSERT INTO $virus_table VALUES('$virus', 'title')";
 		$result = $conn->query($query);
-		if (!$result) return ("Database access failed: " . $conn->error);
-		echo $result."<br>";
-		$result->close();
-		return "$virus added";
+		if (!$result) return ("Insert failed: " . $conn->error);
+		return true;
 	}
 
 	function getSignature($file){
