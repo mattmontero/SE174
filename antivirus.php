@@ -2,40 +2,55 @@
 	require_once 'login.php';
 	require_once 'antivirus.html';
 	$virus_table = "viruses";
+	$admins_table = "users";
+
 	$conn = new mysqli($hn, $un, $pw, $db);
 	if($conn->connect_error) die($conn->connect_error);
 	
 	if($_FILES){
-		$handler = fopen($_FILES['filename']['tmp_name'], "r");		
-		$contents = fread($handler, filesize($_FILES['filename']['tmp_name']));
-		$contents = str_replace(array("\r", "\n"), '', $contents);
+		//$handler = fopen($_FILES['filename']['tmp_name'], "r");		
+		//$contents = fread($handler, filesize($_FILES['filename']['tmp_name']));
+		//$contents = str_replace(array("\r", "\n"), '', $contents);
 
-		print("<div style ='font:20px Monospace;text-decoration:underline;'>");
+		print("<div style ='font:20px Monospace; text-decoration:underline;'>");
 		
 		$status = $_POST['infected'];
 		switch($status){
 			case 'possible':
-				echo "Possibly infected<br>";
-				scanForVirus($conn, $_FILES['filename']['tmp_name']);
+				if(scanForVirus($conn, $_FILES['filename']['tmp_name'])){
+					echo "<b>!!ATTENTION!!:</b> Virus Found!<br>";
+				} else {
+					echo "Super clean file<br>";
+				}
 				break;
 			case 'virus':
-				echo "Verify Login...<br>".validate_admin();
+				if(validate_admin($conn)){
+					echo "<br>Logged in!<br>";
+					addVirus($conn, getSignature($_FILES['filename']['tmp_name']));
+					echo "Virus added?<br>";
+				} else {
+					echo "Invalid Username/Password";
+				}
 				break;
 			default:
 				echo "Something bad happened.";
 		}
-
 	}
 
 	function addVirus($conn, $virus){
-		$virus = fix_string($conn, $virus);
-		echo $virus."<br>";
+		$virus = fix_string($virus);
+		echo "Adding...'".$virus."'<br>";
 		global $virus_table;
 		$query = "INSERT INTO $virus_table VALUES('$virus')";
 		$result = $conn->query($query);
 		if (!$result) return ("Database access failed: " . $conn->error);
+		echo $result."<br>";
 		$result->close();
-		return "";
+		return "$virus added";
+	}
+
+	function getSignature($file){
+		return file_get_contents($file, NULL, NULL, 0, 20);
 	}
 
 	function getVirusSignatures($conn){
@@ -56,7 +71,7 @@
 
 	function fix_string($str){
         if(get_magic_quotes_gpc())
-            $str = stripcslashes($str);
+			$str = stripcslashes($str);
         return htmlentities($str);
 	}
 
@@ -66,29 +81,37 @@
 			for($i = 0; $i < filesize($_FILES['filename']['tmp_name']) - 19; $i++){
 				$content20 = file_get_contents($file, NULL, NULL, $i, 20);
 				if($content20 == $virus){
-					echo "Virus --> ";
-					echo "'".$virus."' == ";
-					echo "'".$content20."'<br>";
+					return true;
 				}
 			}
 		}
+		return false;
 	}
 
-	function validate_admin(){
-		echo "in validate admin";
+	function validate_admin($conn){
+		global $admins_table;
 
 		$username = $password = "";
 		if(isset($_POST['username']))
 			$username = fix_string($_POST["username"]);
 		if(isset($_POST['password']))
 			$password = fix_string($_POST["password"]);
-		echo "<br>Username : '$username'";
-		echo "<br>Password : '$password'<br>";
+		$password = md5($password);
 		
-		// if(validate_password($password) && validate_username($username)){
-		// 	return true;
-		// } else {
-		// 	return "Invalid username/password";
-		// }
+		$query = "SELECT * FROM $admins_table WHERE username='$username'";
+		$result = $conn->query($query);
+		if (!$result) return ("Database access failed: " . $conn->error);
+
+		$result->data_seek(0);
+		$verified = false;
+		if ($result->num_rows == 1){
+			$cmpPassword = ($result->fetch_array(MYSQLI_NUM))[1];
+			if($password == $cmpPassword)
+				$verified = true;
+		} else {
+			echo "invalid un/pw";
+		}
+		$result->close();
+		return $verified;
 	}
 ?>

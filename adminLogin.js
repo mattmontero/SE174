@@ -9,11 +9,6 @@ function enableSubmit(){
     }
 }
 
-function radioInput(){
-    radioInfected = true
-    enableSubmit()
-}
-
 function fileInput(file){
     if(file.files.length == 0){
         fileLoaded = false
@@ -23,9 +18,16 @@ function fileInput(file){
     enableSubmit()
 }
 
+function radioInput(radio){
+    radioInfected = true
+    enableSubmit()
+}
+
 function validate(form){
-    console.log("validate")
-    console.log(form.username.value)
-    console.log(form.password.value)
-    return false
+    if(form["infected"].value=="virus")
+         if ((form["username"].value).length == 0 || (form["password"].value).length == 0){
+             alert("Admin must login if file is surely infected");
+             return false;
+         }            
+    return true
 }
