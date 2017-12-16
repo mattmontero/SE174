@@ -1,4 +1,5 @@
 <?php
+	session_start();
 	require_once 'login.php';
 	require_once 'antivirus.html';
 	$virus_table = "viruses";
@@ -6,16 +7,8 @@
 
 	$conn = new mysqli($hn, $un, $pw, $db);
 	if($conn->connect_error) die($conn->connect_error);
-
-	echo "--Add virus test--<br>";
-	echo addVirus($conn,"20202020202020202021");
-	echo "<br>--Add virus test--<br>";
 	
 	if($_FILES){
-		//$handler = fopen($_FILES['filename']['tmp_name'], "r");		
-		//$contents = fread($handler, filesize($_FILES['filename']['tmp_name']));
-		//$contents = str_replace(array("\r", "\n"), '', $contents);
-		
 		//print("<div style ='font:20px Monospace; text-decoration:underline;'>");
 		
 		$status = $_POST['infected'];
@@ -29,24 +22,23 @@
 				break;
 			case 'virus':
 				if(validate_admin($conn)){
-					echo "<br>Logged in!<br>";
-					echo addVirus($conn, getSignature($_FILES['filename']['tmp_name']))."<br>";
+					echo addVirus($conn, getSignature($_FILES['filename']['tmp_name']), $_POST['vname']);
 				} else {
 					echo "Invalid Username/Password";
 				}
 				break;
-			default:
-				echo "Something bad happened.";
 		}
 	}
+	session_destroy();
 
-	function addVirus($conn, $virus){
+	function addVirus($conn, $virus, $virus_name){
 		$virus = fix_string($virus);
+		$virus_name = fix_string($virus_name);
 		global $virus_table;
-		$query = "INSERT INTO $virus_table VALUES('$virus', 'title')";
+		$query = "INSERT INTO $virus_table VALUES('$virus', '$virus_name')";
 		$result = $conn->query($query);
 		if (!$result) return ("Insert failed: " . $conn->error);
-		return true;
+		return "Virus added to database";
 	}
 
 	function getSignature($file){
@@ -96,7 +88,9 @@
 			$username = fix_string($_POST["username"]);
 		if(isset($_POST['password']))
 			$password = fix_string($_POST["password"]);
-		$password = md5($password);
+		$salt_1 = "@&0!*";
+		$salt_2 = "mp40%";
+		$token = hash("ripemd128","$salt_1$password$salt_2");
 		
 		$query = "SELECT * FROM $admins_table WHERE username='$username'";
 		$result = $conn->query($query);
@@ -104,14 +98,16 @@
 
 		$result->data_seek(0);
 		$verified = false;
-		if ($result->num_rows == 1){
-			$cmpPassword = ($result->fetch_array(MYSQLI_NUM))[1];
-			if($password == $cmpPassword)
+		if ($result->num_rows){
+			$row = $result->fetch_array(MYSQLI_NUM);
+			$result->close();
+
+			if($token == $row[1]){
+				$_SESSION['username'] = $username;
+				$_SESSION['password'] = $password;
 				$verified = true;
-		} else {
-			echo "invalid un/pw";
+			}
 		}
-		$result->close();
 		return $verified;
 	}
 ?>
