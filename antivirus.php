@@ -8,9 +8,7 @@
 	$conn = new mysqli($hn, $un, $pw, $db);
 	if($conn->connect_error) die($conn->connect_error);
 	
-	if($_FILES){
-		//print("<div style ='font:20px Monospace; text-decoration:underline;'>");
-		
+	if($_FILES){		
 		$status = $_POST['infected'];
 		switch($status){
 			case 'possible':
@@ -31,6 +29,10 @@
 	}
 	session_destroy();
 
+	/**
+	 * Attemps to add a virus signature to the virus database.
+	 * @return string Insert failure, or Insert confirmation
+	 */
 	function addVirus($conn, $virus, $virus_name){
 		$virus = fix_string($virus);
 		$virus_name = fix_string($virus_name);
@@ -41,10 +43,16 @@
 		return "Virus added to database";
 	}
 
+	/**
+	 * @return string first 20 bytes of file
+	 */
 	function getSignature($file){
 		return file_get_contents($file, NULL, NULL, 0, 20);
 	}
 
+	/**
+	 * @return array{string} all viruses in db.
+	 */
 	function getVirusSignatures($conn){
 		global $virus_table;
 		$query = "SELECT * FROM $virus_table";
@@ -61,6 +69,9 @@
 		return $signatures;
 	}
 
+	/**
+	 * sanitize strings
+	 */
 	function fix_string($str){
         if(get_magic_quotes_gpc())
 			$str = stripcslashes($str);
@@ -80,6 +91,9 @@
 		return false;
 	}
 
+	/**
+	 * Validates admin un/pw
+	 */
 	function validate_admin($conn){
 		global $admins_table;
 
